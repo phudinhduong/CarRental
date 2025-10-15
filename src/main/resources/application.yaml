@@ -1,14 +1,19 @@
 server:
   port: 8080
   servlet:
-    context-path: /identity
+    context-path: /carrental
 
 spring:
   datasource:
-    url: "jdbc:sqlserver://localhost:1433; databaseName=CarRental; encrypt=true;trustServerCertificate=true;"
+    url: jdbc:sqlserver://localhost:1433;databaseName=CarRental;encrypt=true;trustServerCertificate=true;
     username: sa
     password: sa
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
