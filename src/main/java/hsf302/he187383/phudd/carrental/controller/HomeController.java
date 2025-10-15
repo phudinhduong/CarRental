@@ -6,50 +6,35 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping({"/", "/index"})
     public String homepage() {
         return "index";
     }
 
     @GetMapping("/about")
-    public String showAbout() {
-        return "about";
-    }
+    public String about() { return "about"; }
 
     @GetMapping("/service")
-    public String showService() {
-        return "service";
-    }
+    public String service() { return "service"; }
 
     @GetMapping("/car")
-    public String showCar() {
-        return "car";
-    }
+    public String car() { return "car"; }
 
     @GetMapping("/detail")
-    public String showDetail() {
-        return "detail";
-    }
+    public String detail() { return "detail"; }
 
     @GetMapping("/booking")
-    public String showBooking() {
-        return "booking";
-    }
+    public String booking() { return "booking"; }
 
     @GetMapping("/team")
-    public String showTeam() {
-        return "team";
-    }
+    public String team() { return "team"; }
 
     @GetMapping("/testimonial")
-    public String showTestimonial() {
-        return "testimonial";
-    }
+    public String testimonial() { return "testimonial"; }
 
     @GetMapping("/contact")
-    public String showContact() {
-        return "contact";
-    }
+    public String contact() { return "contact"; }
 
-
+//    @GetMapping("/login")
+//    public String login() { return "login"; }
 }

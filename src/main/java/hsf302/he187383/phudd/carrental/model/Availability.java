@@ -8,23 +8,26 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "vehicle_images")
+@Table(name = "vehicle_availability")
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class VehicleImage {
+public class Availability {
     @Id @GeneratedValue
-    @Column(name = "image_id")
-    UUID imageId;
+    @Column(name = "availability_id")
+    UUID availabilityId;
 
     @ManyToOne @JoinColumn(name = "vehicle_id")
     Vehicle vehicle;
 
-    @Column(length = 1024)
-    String url;
+    @Column(name = "start_datetime")
+    LocalDateTime startDatetime;
 
-    @Column(name = "is_primary")
-    Boolean isPrimary;
+    @Column(name = "end_datetime")
+    LocalDateTime endDatetime;
 
-    @Column(name = "uploaded_at")
-    LocalDateTime uploadedAt;
+    @Column(name = "is_available")
+    Boolean isAvailable;
+
+    @Column(length = 500)
+    String notes;
 }
