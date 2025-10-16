@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "vehicles")
+//@Table(name = "vehicles")
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Vehicle {
@@ -21,6 +21,7 @@ public class Vehicle {
     @ManyToOne @JoinColumn(name = "owner_id")
     User owner;
 
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     String title;
     String brand;
     String model;
