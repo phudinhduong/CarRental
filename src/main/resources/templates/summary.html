@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9fafc;
+            color: #333;
+        }
+        h2 {
+            color: #1e88e5;
+            border-bottom: 2px solid #1e88e5;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .label {
+            font-weight: 600;
+            color: #555;
+        }
+        .info {
+            margin: 5px 0 10px 10px;
+        }
+        .price-box {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .price-box h3 {
+            margin: 10px 0 5px;
+            color: #1565c0;
+        }
+        .price-box p {
+            margin: 5px;
+            font-size: 16px;
+        }
+        .highlight {
+            color: #0d47a1;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="section">
+    <div class="label">Pickup Location:</div>
+    <div class="info" id="pickupInfo"></div>
+
+    <div class="label">Drop-off Location:</div>
+    <div class="info" id="dropInfo"></div>
+</div>
+
+<div class="section">
+    <div class="label">Pickup Time:</div>
+    <div class="info" id="pickupTimeInfo"></div>
+
+    <div class="label">Drop-off Time:</div>
+    <div class="info" id="dropTimeInfo"></div>
+</div>
+
+<div class="section">
+    <div class="label">Add-ons:</div>
+    <div class="info" id="addonsInfo"></div>
+
+    <div class="label">Special Request:</div>
+    <div class="info" id="requestInfo"></div>
+</div>
+
+<div class="price-box">
+    <h3>Payment Details</h3>
+    <p><strong>Total Price:</strong> <span class="highlight" id="totalPrice"></span></p>
+    <p id="depositLine"><strong>Deposit (30%):</strong> <span class="highlight" id="depositPrice"></span></p>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const data = JSON.parse(localStorage.getItem("bookingInfo") || "{}");
+
+        if (!data || Object.keys(data).length === 0) {
+            document.body.innerHTML = "<h3 style='text-align:center;color:red;'>No booking information found.</h3>";
+            return;
+        }
+
+        // ==== ĐỊA CHỈ ====
+        const pickup = [data.pickupAddress, data.pickupWard, data.pickupDistrict, data.pickupProvince]
+            .filter(Boolean).join(", ");
+        const drop = [data.dropAddress, data.dropWard, data.dropDistrict, data.dropProvince]
+            .filter(Boolean).join(", ");
+
+        const pickupTime = `${data.pickupDate || ""} ${data.pickupTime || ""}`;
+        const dropTime = `${data.dropDate || ""} ${data.dropTime || ""}`;
+
+        // ==== ADDONS ====
+        let addonHtml = "None";
+        if (Array.isArray(data.selectedAddons) && data.selectedAddons.length > 0) {
+            addonHtml = data.selectedAddons
+                .map(a => `${a.name} (${a.price.toLocaleString('vi-VN')} ₫)`)
+                .join("<br>");
+        }
+
+        // ==== YÊU CẦU ĐẶC BIỆT ====
+        const request = data.specialRequest?.trim() || "None";
+
+        // ==== TỔNG GIÁ ====
+        const total = data.totalPrice ?? 0;
+        const deposit = data.depositPrice ?? 0;
+        const isDeposit = data.paymentType === "Pay Deposit Only";
+
+        const formatVND = (val) => val.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND"
+        });
+
+        // ==== RENDER ====
+        document.getElementById("pickupInfo").innerText = pickup;
+        document.getElementById("dropInfo").innerText = drop;
+        document.getElementById("pickupTimeInfo").innerText = pickupTime;
+        document.getElementById("dropTimeInfo").innerText = dropTime;
+        document.getElementById("addonsInfo").innerHTML = addonHtml;
+        document.getElementById("requestInfo").innerText = request;
+
+        document.getElementById("totalPrice").innerText = formatVND(total);
+
+        const depositLine = document.getElementById("depositLine");
+        if (isDeposit) {
+            depositLine.style.display = "block";
+            document.getElementById("depositPrice").innerText = formatVND(deposit);
+        } else {
+            depositLine.style.display = "none";
+        }
+    });
+</script>
+
+
+</body>
+</html>

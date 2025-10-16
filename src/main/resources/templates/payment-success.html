@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #28a745;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+<div class="success-card">
+    <div class="success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+    </div>
+    <h2 class="text-success mb-3">Payment Successful!</h2>
+    <p class="mb-4">Your booking has been confirmed.</p>
+    <div id="booking-details" class="text-left mb-4"></div>
+    <a href="/carrental/index.html" class="btn btn-primary">Back to Home</a>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('bookingId');
+
+    const bookingInfo = JSON.parse(localStorage.getItem('bookingInfo') || '{}');
+
+    if (bookingInfo.bookingId) {
+        document.getElementById('booking-details').innerHTML = `
+                <p><strong>Booking ID:</strong> ${bookingInfo.bookingId}</p>
+                <p><strong>Amount Paid:</strong> ${bookingInfo.depositPrice.toLocaleString()} VND</p>
+            `;
+        // Clear after display
+        localStorage.removeItem('bookingInfo');
+    }
+</script>
+</body>
+</html>

@@ -51,5 +51,10 @@ public class HomeController {
         return "contact";
     }
 
+    @GetMapping("/summary")
+    public String showSummary() {
+        return "summary"; // tương ứng với templates/service.html
+    }
+
 
 }
