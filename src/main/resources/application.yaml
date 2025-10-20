@@ -21,8 +21,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        highlight_sql: true      # làm nổi bật SQL trong log
-        jdbc.time_zone: UTC      # tránh lệch timezone cho datetime
+        highlight_sql: true
+        jdbc.time_zone: UTC
     database-platform: org.hibernate.dialect.SQLServerDialect
 
 #logging:

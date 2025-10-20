@@ -78,7 +78,18 @@
 
             <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                 <div class="navbar-nav ml-auto py-0">
+
+
+
                     <a th:href="@{/}" class="nav-item nav-link active">Home</a>
+
+                    <!-- Chỉ hiển thị với Owner -->
+                    <a th:if="${currentUser != null and currentUser.role.name == 'Owner'}"
+                       th:href="@{/carowner/manageCar}"
+                       class="nav-item nav-link">
+                        Manage Car
+                    </a>
+
                     <a th:href="@{/about}" class="nav-item nav-link">About</a>
                     <a th:href="@{/service}" class="nav-item nav-link">Service</a>
 
@@ -119,6 +130,7 @@
                     <a class="nav-item nav-link" th:if="${currentUser == null}" th:href="@{/login}">Login</a>
                 </div>
             </div>
+
         </nav>
     </div>
 </div>

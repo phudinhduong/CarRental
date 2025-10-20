@@ -61,6 +61,17 @@ public class DataSeeder implements CommandLineRunner {
                     .createdAt(LocalDateTime.now())
                     .build());
 
+            User owner1 = userRepo.save(User.builder()
+                    .email("owner1@gmail.com")
+                    .passwordHash(encoder.encode("123456"))
+                    .fullName("Owner1 Demo")
+                    .phone("0900000011")
+                    .role(ownerRole)
+                    .status("active")
+                    .isVerified(true)
+                    .createdAt(LocalDateTime.now())
+                    .build());
+
             User customer = userRepo.save(User.builder()
                     .email("customer@gmail.com")
                     .passwordHash(encoder.encode("123456"))

@@ -95,4 +95,8 @@ public class HomeController {
 
 //    @GetMapping("/login")
 //    public String login() { return "login"; }
+
+//    @GetMapping("/manageCar")
+//    public String showManageCar() { return "manageCar"; }
+
 }
