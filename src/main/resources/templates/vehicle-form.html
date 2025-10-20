@@ -31,198 +31,126 @@
 
 </head>
 <body>
+<!-- Import topbar -->
+<div th:replace="fragments/header :: topbar"></div>
 
-<!-- Topbar Start -->
-<div class="container-fluid bg-dark py-3 px-lg-5 d-none d-lg-block">
+<!-- Import navbar (active = home) -->
+<div th:replace="fragments/header :: navbar('home')"></div>
+
+<div class="container my-5">
     <div class="row">
-        <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-            <div class="d-inline-flex align-items-center">
-                <a class="text-body pr-3" href=""><i class="fa fa-phone-alt mr-2"></i>+012 345 6789</a>
-                <span class="text-body">|</span>
-                <a class="text-body px-3" href=""><i class="fa fa-envelope mr-2"></i>info@example.com</a>
-            </div>
-        </div>
-        <div class="col-md-6 text-center text-lg-right">
-            <div class="d-inline-flex align-items-center">
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a class="text-body pl-3" href="">
-                    <i class="fab fa-youtube"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Topbar End -->
-
-
-<!-- Navbar Start -->
-<div class="container-fluid position-relative nav-bar p-0">
-    <div class="position-relative px-lg-5" style="z-index: 9;">
-        <nav class="navbar navbar-expand-lg bg-secondary navbar-dark py-3 py-lg-0 pl-3 pl-lg-5">
-            <a th:href="@{/}" class="navbar-brand">
-                <h1 class="text-uppercase text-primary mb-1">Royal Cars</h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
-                <div class="navbar-nav ml-auto py-0">
-
-
-
-                    <a th:href="@{/}" class="nav-item nav-link active">Home</a>
-
-                    <!-- Chỉ hiển thị với Owner -->
-                    <a th:if="${currentUser != null and currentUser.role.name == 'Owner'}"
-                       th:href="@{/carowner/manageCar}"
-                       class="nav-item nav-link">
-                        Manage Car
-                    </a>
-
-                    <a th:href="@{/about}" class="nav-item nav-link">About</a>
-                    <a th:href="@{/service}" class="nav-item nav-link">Service</a>
-
-                    <!-- Cars Dropdown -->
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Cars</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a th:href="@{/car}" class="dropdown-item">Car Listing</a>
-                            <a th:href="@{/detail}" class="dropdown-item">Car Detail</a>
-                            <a th:href="@{/booking}" class="dropdown-item">Car Booking</a>
-                        </div>
-                    </div>
-
-                    <!-- Pages Dropdown -->
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a th:href="@{/team}" class="dropdown-item">The Team</a>
-                            <a th:href="@{/testimonial}" class="dropdown-item">Testimonial</a>
-                        </div>
-                    </div>
-
-                    <a th:href="@{/contact}" class="nav-item nav-link">Contact</a>
-
-                    <!-- Khi ĐÃ đăng nhập -->
-                    <div class="nav-item dropdown" th:if="${currentUser != null}">
-                        <a href="#" class="nav-link dropdown-toggle" id="userMenu"
-                           data-toggle="dropdown" aria-expanded="false"
-                           th:text="${currentUser.fullName != null ? currentUser.fullName : currentUser.email}">
-                            User
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right rounded-0 m-0" aria-labelledby="userMenu">
-                            <a class="dropdown-item" th:href="@{/logout}">Logout</a>
-                        </div>
-                    </div>
-
-                    <!-- Khi CHƯA đăng nhập -->
-                    <a class="nav-item nav-link" th:if="${currentUser == null}" th:href="@{/login}">Login</a>
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" th:text="${vehicle.vehicleId} != null ? 'Sửa xe' : 'Thêm xe'">Xe</h5>
+                    <a class="btn btn-light btn-sm" th:href="@{/carowner/manageCar}"><i class="fas fa-arrow-left mr-1"></i> Quay lại</a>
                 </div>
-            </div>
+                <div class="card-body">
+                    <form th:action="@{${actionUrl}}" th:object="${vehicle}" method="post" class="needs-validation" novalidate>
 
-        </nav>
-    </div>
-</div>
-<!-- Navbar End -->
+                        <h6 class="text-uppercase text-muted mb-3">Thông tin cơ bản</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-medium">Tiêu đề <span class="text-danger">*</span></label>
+                                <input class="form-control" th:field="*{title}" placeholder="Ví dụ: Toyota Vios 2020" required>
+                                <div class="invalid-feedback">Vui lòng nhập tiêu đề.</div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Hãng <span class="text-danger">*</span></label>
+                                <input class="form-control" th:field="*{brand}" placeholder="Ví dụ: Toyota" required>
+                                <div class="invalid-feedback">Vui lòng nhập hãng xe.</div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Model</label>
+                                <input class="form-control" th:field="*{model}" placeholder="Ví dụ: Vios E">
+                            </div>
+                        </div>
 
-<div class="container mt-4">
-    <h3 th:text="${vehicle.vehicleId} != null ? 'Sửa xe' : 'Thêm xe'">Xe</h3>
+                        <h6 class="text-uppercase text-muted mt-4 mb-3">Thông số</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-2">
+                                <label class="font-weight-medium">Loại</label>
+                                <input class="form-control" th:field="*{type}" placeholder="car / motorbike / truck">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Biển số <span class="text-danger">*</span></label>
+                                <input class="form-control" th:field="*{licensePlate}" placeholder="Ví dụ: 30A-123.45" required>
+                                <div class="invalid-feedback">Vui lòng nhập biển số.</div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label class="font-weight-medium">Năm</label>
+                                <input type="number" class="form-control" th:field="*{year}" min="1980" max="2100" placeholder="VD: 2020">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label class="font-weight-medium">Màu</label>
+                                <input class="form-control" th:field="*{color}" placeholder="Ví dụ: Đen">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Số ghế</label>
+                                <input type="number" class="form-control" th:field="*{seats}" min="1" max="60" placeholder="VD: 5">
+                            </div>
+                        </div>
 
-    <form th:action="@{${actionUrl}}"
-          th:object="${vehicle}" method="post">
+                        <h6 class="text-uppercase text-muted mt-4 mb-3">Giá & Trạng thái</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-medium">Giá/ngày</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" th:field="*{dailyPrice}" min="0" step="1000" placeholder="VD: 800000">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">đ/ngày</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-medium">Đặt cọc</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" th:field="*{depositAmount}" min="0" step="1000" placeholder="VD: 2000000">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-medium">Trạng thái</label>
+                                <select class="form-control" th:field="*{status}">
+                                    <option th:each="s : ${T(hsf302.he187383.phudd.carrental.model.enums.VehicleStatus).values()}" th:value="${s}" th:text="${s}"></option>
+                                </select>
+                            </div>
+                        </div>
 
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>Tiêu đề</label>
-                <input class="form-control" th:field="*{title}" required>
-            </div>
-            <div class="form-group col-md-3">
-                <label>Hãng</label>
-                <input class="form-control" th:field="*{brand}" required>
-            </div>
-            <div class="form-group col-md-3">
-                <label>Model</label>
-                <input class="form-control" th:field="*{model}">
-            </div>
-        </div>
+                        <h6 class="text-uppercase text-muted mt-4 mb-3">Khác</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-medium">Địa điểm</label>
+                                <select class="form-control" name="locationId">
+                                    <option value="" disabled th:if="${vehicle.location == null}" selected>Chọn địa điểm</option>
+                                    <option th:each="loc : ${locations}"
+                                            th:value="${loc.locationId}"
+                                            th:selected="${vehicle.location != null and loc.locationId == vehicle.location.locationId}"
+                                            th:text="${loc.city + ' - ' + loc.addressLine}">
+                                    </option>
+                                </select>
+                                <small class="form-text text-muted">Chọn nơi để nhận/trả xe.</small>
+                            </div>
+                            <div class="form-group col-md-3 d-flex align-items-center">
+                                <div class="custom-control custom-switch mt-3 mt-md-4">
+                                    <input class="custom-control-input" type="checkbox" id="isActiveSwitch" th:field="*{isActive}">
+                                    <label class="custom-control-label" for="isActiveSwitch">Kích hoạt</label>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="form-row">
-            <div class="form-group col-md-2">
-                <label>Loại</label>
-                <input class="form-control" th:field="*{type}" placeholder="car/motorbike/truck">
-            </div>
-            <div class="form-group col-md-3">
-                <label>Biển số</label>
-                <input class="form-control" th:field="*{licensePlate}" required>
-            </div>
-            <div class="form-group col-md-2">
-                <label>Năm</label>
-                <input type="number" class="form-control" th:field="*{year}">
-            </div>
-            <div class="form-group col-md-2">
-                <label>Màu</label>
-                <input class="form-control" th:field="*{color}">
-            </div>
-            <div class="form-group col-md-3">
-                <label>Số ghế</label>
-                <input type="number" class="form-control" th:field="*{seats}">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-4">
-                <label>Giá/ngày (đ)</label>
-                <input type="number" class="form-control" th:field="*{dailyPrice}">
-            </div>
-            <div class="form-group col-md-4">
-                <label>Đặt cọc (đ)</label>
-                <input type="number" class="form-control" th:field="*{depositAmount}">
-            </div>
-            <div class="form-group col-md-4">
-                <label>Trạng thái</label>
-                <select class="form-control" th:field="*{status}">
-                    <option th:each="s : ${T(hsf302.he187383.phudd.carrental.model.enums.VehicleStatus).values()}"
-                            th:value="${s}" th:text="${s}"></option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group col-md-6">
-                <label>Địa điểm</label>
-                <select class="form-control" name="locationId">
-                    <option th:each="loc : ${locations}"
-                            th:value="${loc.locationId}"
-                            th:selected="${vehicle.location != null and loc.locationId == vehicle.location.locationId}"
-                            th:text="${loc.city + ' - ' + loc.addressLine}">
-                    </option>
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <div class="form-check mt-4">
-                    <input class="form-check-input" type="checkbox" th:field="*{isActive}">
-                    <label class="form-check-label">Kích hoạt</label>
+                        <hr>
+                        <div class="d-flex justify-content-end">
+                            <a class="btn btn-outline-secondary mr-2" th:href="@{/carowner/manageCar}"><i class="fas fa-times mr-1"></i> Huỷ</a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Lưu</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <div class="mt-3">
-            <a class="btn btn-secondary" th:href="@{/carowner/manageCar}">Huỷ</a>
-            <button type="submit" class="btn btn-primary">Lưu</button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <!-- JavaScript Libraries -->

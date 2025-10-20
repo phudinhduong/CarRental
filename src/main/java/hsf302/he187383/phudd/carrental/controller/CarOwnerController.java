@@ -26,7 +26,7 @@ public class CarOwnerController {
     @GetMapping("/manageCar")
     public String list(@ModelAttribute("currentUser") User currentUser, Model model) {
         if (!isOwner(currentUser)) return "redirect:/login?error=login_required";
-        model.addAttribute("vehicles", vehicleService.findActiveByOwner(currentUser.getUserId()));
+        model.addAttribute("vehicles", vehicleService.findByOwner_userIdAndDeletedAtIsNull(currentUser.getUserId()));
         return "manageCar";
     }
 

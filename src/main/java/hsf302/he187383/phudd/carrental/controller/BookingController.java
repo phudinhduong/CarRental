@@ -17,22 +17,22 @@ public class BookingController {
 
     private final VehicleService vehicleService;
 
-    @GetMapping("/booking")
-    public String Default(Model model) {
-        var vehicles = vehicleService.findAll();
-        if (vehicles.isEmpty()) {
-            model.addAttribute("errorMsg", "No vehicles available.");
-            return "booking"; // or "error" page
-        }
-
-        Vehicle vehicle = vehicles.get(0);
-        model.addAttribute("vehicle", vehicle);
-
-        var images = vehicleService.findImagesOf(vehicle.getVehicleId());
-        model.addAttribute("images", images); // <-- use "images" to match the template
-
-        return "booking";
-    }
+//    @GetMapping("/booking")
+//    public String Default(Model model) {
+//        var vehicles = vehicleService.findAll();
+//        if (vehicles.isEmpty()) {
+//            model.addAttribute("errorMsg", "No vehicles available.");
+//            return "booking"; // or "error" page
+//        }
+//
+//        Vehicle vehicle = vehicles.get(0);
+//        model.addAttribute("vehicle", vehicle);
+//
+//        var images = vehicleService.findImagesOf(vehicle.getVehicleId());
+//        model.addAttribute("images", images); // <-- use "images" to match the template
+//
+//        return "booking";
+//    }
 
     @GetMapping("/booking/{id}")
     public String carDetail(@PathVariable("id") UUID vehicleId, Model model) {

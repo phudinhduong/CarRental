@@ -33,110 +33,11 @@
 
 <body>
 
-<!-- Topbar Start -->
-<div class="container-fluid bg-dark py-3 px-lg-5 d-none d-lg-block">
-    <div class="row">
-        <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
-            <div class="d-inline-flex align-items-center">
-                <a class="text-body pr-3" href=""><i class="fa fa-phone-alt mr-2"></i>+012 345 6789</a>
-                <span class="text-body">|</span>
-                <a class="text-body px-3" href=""><i class="fa fa-envelope mr-2"></i>info@example.com</a>
-            </div>
-        </div>
-        <div class="col-md-6 text-center text-lg-right">
-            <div class="d-inline-flex align-items-center">
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a class="text-body px-3" href="">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a class="text-body pl-3" href="">
-                    <i class="fab fa-youtube"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Topbar End -->
+<!-- Import topbar -->
+<div th:replace="fragments/header :: topbar"></div>
 
-
-<!-- Navbar Start -->
-<div class="container-fluid position-relative nav-bar p-0">
-    <div class="position-relative px-lg-5" style="z-index: 9;">
-        <nav class="navbar navbar-expand-lg bg-secondary navbar-dark py-3 py-lg-0 pl-3 pl-lg-5">
-            <a th:href="@{/}" class="navbar-brand">
-                <h1 class="text-uppercase text-primary mb-1">Royal Cars</h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
-                <div class="navbar-nav ml-auto py-0">
-
-
-
-                    <a th:href="@{/}" class="nav-item nav-link active">Home</a>
-
-                    <!-- Chỉ hiển thị với Owner -->
-                    <a th:if="${currentUser != null and currentUser.role.name == 'Owner'}"
-                       th:href="@{/carowner/manageCar}"
-                       class="nav-item nav-link">
-                        Manage Car
-                    </a>
-
-                    <a th:href="@{/about}" class="nav-item nav-link">About</a>
-                    <a th:href="@{/service}" class="nav-item nav-link">Service</a>
-
-                    <!-- Cars Dropdown -->
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Cars</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a th:href="@{/car}" class="dropdown-item">Car Listing</a>
-                            <a th:href="@{/detail}" class="dropdown-item">Car Detail</a>
-                            <a th:href="@{/booking}" class="dropdown-item">Car Booking</a>
-                        </div>
-                    </div>
-
-                    <!-- Pages Dropdown -->
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu rounded-0 m-0">
-                            <a th:href="@{/team}" class="dropdown-item">The Team</a>
-                            <a th:href="@{/testimonial}" class="dropdown-item">Testimonial</a>
-                        </div>
-                    </div>
-
-                    <a th:href="@{/contact}" class="nav-item nav-link">Contact</a>
-
-                    <!-- Khi ĐÃ đăng nhập -->
-                    <div class="nav-item dropdown" th:if="${currentUser != null}">
-                        <a href="#" class="nav-link dropdown-toggle" id="userMenu"
-                           data-toggle="dropdown" aria-expanded="false"
-                           th:text="${currentUser.fullName != null ? currentUser.fullName : currentUser.email}">
-                            User
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right rounded-0 m-0" aria-labelledby="userMenu">
-                            <a class="dropdown-item" th:href="@{/logout}">Logout</a>
-                        </div>
-                    </div>
-
-                    <!-- Khi CHƯA đăng nhập -->
-                    <a class="nav-item nav-link" th:if="${currentUser == null}" th:href="@{/login}">Login</a>
-                </div>
-            </div>
-
-        </nav>
-    </div>
-</div>
-<!-- Navbar End -->
+<!-- Import navbar (active = home) -->
+<div th:replace="fragments/header :: navbar('home')"></div>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -155,6 +56,7 @@
                 <th>Seats</th>
                 <th>Price/Day</th>
                 <th>Status</th>
+                <th>Active</th>
                 <th>Location</th>
                 <th style="width: 160px;">Actions</th>
             </tr>
@@ -168,6 +70,7 @@
                 <td class="text-center" th:text="${v.seats}">5</td>
                 <td class="text-right" th:text="${#numbers.formatDecimal(v.dailyPrice,0,'COMMA',0,'POINT')} + 'đ'">0đ</td>
                 <td th:text="${v.status}">AVAILABLE</td>
+                <td th:text="${v.isActive} ? 'Active' : 'Inactive'"></td>
                 <td th:text="${v.location != null ? v.location.city : ''}">City</td>
                 <td class="text-center">
                     <a class="btn btn-sm btn-outline-primary"

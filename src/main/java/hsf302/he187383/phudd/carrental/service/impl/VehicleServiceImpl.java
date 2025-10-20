@@ -5,9 +5,13 @@ import hsf302.he187383.phudd.carrental.model.VehicleImage;
 import hsf302.he187383.phudd.carrental.repository.VehicleImageRepository;
 import hsf302.he187383.phudd.carrental.repository.VehicleRepository;
 import hsf302.he187383.phudd.carrental.service.VehicleService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,20 +45,6 @@ public class VehicleServiceImpl implements VehicleService {
     public Vehicle save(Vehicle v) { return vehicleRepository.save(v); }
 
     @Override
-    @Transactional
-    public void deleteById(UUID id) { vehicleRepository.deleteById(id); }
-
-    @Override
-    public List<Vehicle> findByOwner(UUID ownerId) {
-        return vehicleRepository.findByOwner_UserId(ownerId);
-    }
-
-    @Override
-    public List<Vehicle> findActiveByOwner(UUID ownerId) {
-        return vehicleRepository.findByOwner_UserIdAndDeletedAtIsNull(ownerId);
-    }
-
-    @Override
     public Optional<Vehicle> findByIdAndOwner(UUID vehicleId, UUID ownerId) {
         return vehicleRepository.findByVehicleIdAndOwner_UserId(vehicleId, ownerId);
     }
@@ -69,4 +59,24 @@ public class VehicleServiceImpl implements VehicleService {
             vehicleRepository.save(v);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Vehicle> findActivePaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return vehicleRepository.findByIsActiveTrueAndDeletedAtIsNull(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Vehicle> searchActivePaged(String q, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return vehicleRepository.searchActive(q.trim(), pageable);
+    }
+
+    @Override
+    public List<Vehicle> findByOwner_userIdAndDeletedAtIsNull(UUID ownerId) {
+        return vehicleRepository.findByOwner_userIdAndDeletedAtIsNull(ownerId);
+    }
+
 }
