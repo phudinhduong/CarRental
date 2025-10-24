@@ -3,6 +3,7 @@ package hsf302.he187383.phudd.carrental.service;
 import hsf302.he187383.phudd.carrental.config.VnPayConfig;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -18,8 +19,7 @@ public class VnPayService {
     }
 
     public String createPaymentUrl(String bookingId, long amount) throws Exception {
-        // Tạo các tham số
-        Map<String, String> vnp_Params = new TreeMap<>(); // TreeMap tự động sort
+        Map<String, String> vnp_Params = new TreeMap<>();
 
         vnp_Params.put("vnp_Version", "2.1.0");
         vnp_Params.put("vnp_Command", "pay");
@@ -27,7 +27,7 @@ public class VnPayService {
         vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_TxnRef", bookingId + "_" + System.currentTimeMillis());
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan booking " + bookingId);
+        vnp_Params.put("vnp_OrderInfo", "Thanhtoanbooking " + bookingId);
         vnp_Params.put("vnp_OrderType", "other");
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", vnPayConfig.getVnpReturnUrl());
@@ -41,16 +41,16 @@ public class VnPayService {
         cld.add(Calendar.MINUTE, 15);
         vnp_Params.put("vnp_ExpireDate", formatter.format(cld.getTime()));
 
-        // Bước 1: Tạo hashData (KHÔNG encode)
+        // Tạo hashData (không encode) và query string (có encode)
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
 
         boolean first = true;
         for (Map.Entry<String, String> entry : vnp_Params.entrySet()) {
-            String fieldName = entry.getKey();
-            String fieldValue = entry.getValue();
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-            if (fieldValue != null && fieldValue.length() > 0) {
+            if (value != null && value.length() > 0) {
                 if (!first) {
                     hashData.append('&');
                     query.append('&');
@@ -58,31 +58,28 @@ public class VnPayService {
                     first = false;
                 }
 
-                // Hash data: KHÔNG encode
-                hashData.append(fieldName).append('=').append(fieldValue);
+                // hashData: sử dụng giá trị GỐC (không encode)
+                hashData.append(key).append('=').append(value);
 
-                // Query string: CÓ encode
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.UTF_8))
+                // query: URL encode cả key và value
+                query.append(URLEncoder.encode(key, StandardCharsets.UTF_8))
                         .append('=')
-                        .append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8));
+                        .append(URLEncoder.encode(value, StandardCharsets.UTF_8));
             }
         }
 
-        // Bước 2: Tạo secure hash
-        String vnp_SecureHash = vnPayConfig.hmacSHA512(
-                vnPayConfig.getVnpSecretKey(),
-                hashData.toString()
-        );
+        // Tính chữ ký từ hashData (giá trị gốc)
+        String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.getSecretKey(), hashData.toString());
 
-        // Bước 3: Thêm hash vào query string
+        // Thêm chữ ký vào query string
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
 
-        // Debug log
-        System.out.println("=== VNPay Payment URL Debug ===");
-        System.out.println("Hash Data: " + hashData.toString());
-        System.out.println("Secure Hash: " + vnp_SecureHash);
-        System.out.println("Full URL: " + vnPayConfig.getVnpPayUrl() + "?" + query.toString());
-        System.out.println("===============================");
+        System.out.println("=== VNPay Debug ===");
+        System.out.println("HashData: " + hashData);
+        System.out.println("SecureHash: " + vnp_SecureHash);
+        System.out.println("Query: " + query);
+        System.out.println("Full URL: " + vnPayConfig.getVnpPayUrl() + "?" + query);
+        System.out.println("==================");
 
         return vnPayConfig.getVnpPayUrl() + "?" + query.toString();
     }

@@ -537,56 +537,67 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         async function validateBooking() {
+            const now = new Date();
+
+            // --- Lấy thông tin ngày giờ ---
             const pickupDate = document.getElementById('pickupDate').value;
             const dropDate = document.getElementById('dropDate').value;
             const pickupTime = document.getElementById('pickupTime').value;
             const dropTime = document.getElementById('dropTime').value;
-            const now = new Date();
 
-            const pickupProvince = document.getElementById('pickup-province').selectedOptions[0]?.text || "";
-            const pickupDistrict = document.getElementById('pickup-district').selectedOptions[0]?.text || "";
-            const pickupWard = document.getElementById('pickup-ward').selectedOptions[0]?.text || "";
-            const pickupAddress = document.getElementById('pickup-address').value.trim() || "";
+            if (!pickupDate || !dropDate || !pickupTime || !dropTime) {
+                return showAlert('warning', 'Please select pickup and drop-off date & time');
+            }
 
-            const dropProvince = document.getElementById('drop-province').selectedOptions[0]?.text || "";
-            const dropDistrict = document.getElementById('drop-district').selectedOptions[0]?.text || "";
-            const dropWard = document.getElementById('drop-ward').selectedOptions[0]?.text || "";
-            const dropAddress = document.getElementById('drop-address').value.trim() || "";
+            const pickupDateTime = new Date(`${pickupDate} ${pickupTime}`);
+            const dropDateTime = new Date(`${dropDate} ${dropTime}`);
 
-            if (!pickupDate || !dropDate || !pickupTime || !dropTime ||
-                !pickupProvince || !pickupDistrict || !pickupWard || !pickupAddress ||
+            if (pickupDateTime < now) {
+                return showAlert('error', 'Pickup time cannot be in the past');
+            }
+            if (dropDateTime <= pickupDateTime) {
+                return showAlert('error', 'Drop-off time must be after pickup time');
+            }
+
+            const diffDays = Math.ceil((dropDateTime - pickupDateTime) / (1000 * 60 * 60 * 24));
+
+            // --- Lấy thông tin địa chỉ ---
+            const pickupProvince = document.getElementById('pickup-province').selectedOptions[0]?.text || '';
+            const pickupDistrict = document.getElementById('pickup-district').selectedOptions[0]?.text || '';
+            const pickupWard = document.getElementById('pickup-ward').selectedOptions[0]?.text || '';
+            const pickupAddress = document.getElementById('pickup-address').value.trim() || '';
+
+            const dropProvince = document.getElementById('drop-province').selectedOptions[0]?.text || '';
+            const dropDistrict = document.getElementById('drop-district').selectedOptions[0]?.text || '';
+            const dropWard = document.getElementById('drop-ward').selectedOptions[0]?.text || '';
+            const dropAddress = document.getElementById('drop-address').value.trim() || '';
+
+            if (!pickupProvince || !pickupDistrict || !pickupWard || !pickupAddress ||
                 !dropProvince || !dropDistrict || !dropWard || !dropAddress) {
-                Swal.fire({icon: 'warning', title: 'Incomplete information', text: 'Please fill all required fields.'});
-                return false;
+                return showAlert('warning', 'Please fill all address fields');
             }
 
-            const pickup = new Date(`${pickupDate} ${pickupTime}`);
-            const drop = new Date(`${dropDate} ${dropTime}`);
-
-            if (pickup < now || drop <= pickup) {
-                Swal.fire({icon: 'error', title: 'Invalid date/time', text: 'Please check pickup and drop-off date/time.'});
-                return false;
-            }
-
-            const diffDays = Math.ceil((drop - pickup) / (1000 * 60 * 60 * 24));
-
+            // --- Lấy addon ---
             const selectedAddons = Array.from(document.querySelectorAll('input[name="addons"]:checked'))
-                .map(e => ({name: e.nextElementSibling.innerText.trim(), price: parseInt(e.value)}));
+                .map(e => ({ name: e.nextElementSibling.innerText.trim(), price: parseInt(e.value) || 0 }));
+
             const addonsTotal = selectedAddons.reduce((sum, a) => sum + a.price, 0);
 
-            const specialRequest = document.querySelector('textarea')?.value?.trim() || "";
+            // --- Lấy thông tin khác ---
+            const specialRequest = document.querySelector('textarea')?.value?.trim() || '';
             const paymentType = document.getElementById("directcheck").checked ? "Pay Deposit Only" : "Pay Full";
-            const basePricePerDay = 1000000;
+
+            // --- Tính tiền ---
+            const basePricePerDay = 1000000; // có thể thay bằng giá xe thực tế
             const baseTotal = basePricePerDay * diffDays;
             const total = baseTotal + addonsTotal;
-            let deposit = paymentType === "Pay Deposit Only" ? Math.round(total * 0.3) : Math.round(total);
-
-            if (deposit < 10000) deposit = 10000; // VNPay sandbox
+            const deposit = paymentType === "Pay Deposit Only" ? Math.round(total * 0.3) : Math.round(total);
 
             const bookingId = "BK" + Date.now();
+
+            // --- Lưu booking info ---
             const bookingInfo = {
                 bookingId,
                 pickupProvince, pickupDistrict, pickupWard, pickupAddress,
@@ -599,43 +610,67 @@
             };
             localStorage.setItem("bookingInfo", JSON.stringify(bookingInfo));
 
+            // --- Hiển thị summary ---
+            let addonsHtml = selectedAddons.length ?
+                selectedAddons.map(a => `${a.name}: ${a.price.toLocaleString()} VND`).join('<br>') : 'None';
+
+            const htmlSummary = `
+        <div style="text-align:left; padding:20px;">
+            <h4>Booking Summary</h4>
+            <p><strong>Booking ID:</strong> ${bookingId}</p>
+            <p><strong>Pickup:</strong> ${pickupAddress}, ${pickupWard}, ${pickupDistrict}, ${pickupProvince}</p>
+            <p><strong>Drop-off:</strong> ${dropAddress}, ${dropWard}, ${dropDistrict}, ${dropProvince}</p>
+            <p><strong>Duration:</strong> ${diffDays} day(s)</p>
+            <p><strong>Base Price:</strong> ${baseTotal.toLocaleString('vi-VN')} VND</p>
+            <p><strong>Add-ons:</strong><br>${addonsHtml}</p>
+            <p><strong>Total:</strong> ${total.toLocaleString('vi-VN')} VND</p>
+            <p><strong>Payment Amount:</strong> ${deposit.toLocaleString('vi-VN')} VND (${paymentType})</p>
+        </div>
+    `;
+
             Swal.fire({
                 title: 'Booking Summary',
                 width: 850,
-                html: `
-            <div style="text-align: left; padding: 20px;">
-                <h4>Booking Details</h4>
-                <p><strong>Booking ID:</strong> ${bookingId}</p>
-                <p><strong>Pickup:</strong> ${pickupAddress}, ${pickupWard}, ${pickupDistrict}, ${pickupProvince}</p>
-                <p><strong>Drop-off:</strong> ${dropAddress}, ${dropWard}, ${dropDistrict}, ${dropProvince}</p>
-                <p><strong>Duration:</strong> ${diffDays} day(s)</p>
-                <p><strong>Base Price:</strong> ${baseTotal.toLocaleString('vi-VN')} VND</p>
-                <p><strong>Add-ons:</strong> ${addonsTotal.toLocaleString('vi-VN')} VND</p>
-                <p><strong>Total:</strong> ${total.toLocaleString('vi-VN')} VND</p>
-                <p><strong>Payment Amount:</strong> ${deposit.toLocaleString('vi-VN')} VND (${paymentType})</p>
-            </div>
-        `,
+                html: htmlSummary,
                 showCloseButton: true,
+                showCancelButton: true,
                 confirmButtonText: 'Pay Now',
                 confirmButtonColor: '#3085d6',
-                showCancelButton: true,
                 cancelButtonText: 'Cancel'
             }).then(async (result) => {
                 if (result.isConfirmed) {
-                    try {
-                        Swal.fire({title: 'Processing...', html: 'Redirecting...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
-                        const params = new URLSearchParams({bookingId, amount: deposit});
-                        const res = await fetch(`/carrental/api/create?${params.toString()}`, {method: 'GET'});
-                        const data = await res.json();
-                        if (data.paymentUrl) window.location.href = data.paymentUrl;
-                        else Swal.fire({icon: 'error', title: 'Payment Error', text: data.message || 'Cannot create payment URL.'});
-                    } catch (err) {
-                        Swal.fire({icon: 'error', title: 'Payment Error', text: 'Failed to connect: ' + err.message});
-                    }
+                    await redirectToVNPay(bookingId, deposit);
                 }
             });
+        }
 
-            return true;
+        // --- Hiển thị alert ---
+        function showAlert(icon, text) {
+            Swal.fire({ icon, text });
+        }
+
+        // --- Gửi request backend tạo URL VNPay ---
+        async function redirectToVNPay(bookingId, amount) {
+            try {
+                Swal.fire({
+                    title: 'Processing...',
+                    html: 'Redirecting to VNPay...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                const params = new URLSearchParams({ bookingId, amount });
+                const res = await fetch(`/carrental/api/create?${params.toString()}`, { method: 'GET' });
+                const data = await res.json();
+
+                if (data.paymentUrl) {
+                    window.location.href = data.paymentUrl;
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Payment Error', text: data.message || 'Cannot create payment URL' });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Payment Error', text: err.message });
+            }
         }
     </script>
 

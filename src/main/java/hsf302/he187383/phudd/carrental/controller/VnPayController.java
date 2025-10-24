@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -44,42 +45,57 @@ public class VnPayController {
     @GetMapping("/payment/vnpay-return")
     public RedirectView vnpayReturn(@RequestParam Map<String, String> params) {
         try {
+            System.out.println("=== VNPay Return Debug ===");
+            System.out.println("All params: " + params);
+
             String vnp_SecureHash = params.get("vnp_SecureHash");
+
+            // Loại bỏ các tham số không tham gia verify
             params.remove("vnp_SecureHash");
             params.remove("vnp_SecureHashType");
 
-            // Tạo hash để verify
+            // Sắp xếp các tham số theo thứ tự alphabet
             List<String> fieldNames = new ArrayList<>(params.keySet());
             Collections.sort(fieldNames);
 
+            // Tạo chuỗi hashData từ các tham số đã sắp xếp
             StringBuilder hashData = new StringBuilder();
-            for (String fieldName : fieldNames) {
-                String fieldValue = params.get(fieldName);
-                if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                    if (hashData.length() > 0) {
+            boolean first = true;
+            for (String key : fieldNames) {
+                String value = params.get(key);
+                if (value != null && value.length() > 0) {
+                    if (!first) {
                         hashData.append('&');
+                    } else {
+                        first = false;
                     }
-                    hashData.append(fieldName).append('=').append(fieldValue);
+                    // Sử dụng giá trị GỐC (đã được decode tự động bởi Spring)
+                    hashData.append(key).append('=').append(value);
                 }
             }
 
-            String signValue = vnPayConfig.hmacSHA512(vnPayConfig.getVnpSecretKey(), hashData.toString());
+            System.out.println("HashData for verify: " + hashData);
+
+            // Tính chữ ký
+            String signValue = vnPayConfig.hmacSHA512(vnPayConfig.getSecretKey(), hashData.toString());
+
+            System.out.println("Calculated hash: " + signValue);
+            System.out.println("Received hash: " + vnp_SecureHash);
+            System.out.println("Hash match: " + signValue.equals(vnp_SecureHash));
+            System.out.println("========================");
 
             String vnp_ResponseCode = params.get("vnp_ResponseCode");
             String vnp_TxnRef = params.get("vnp_TxnRef");
 
             if (signValue.equals(vnp_SecureHash)) {
                 if ("00".equals(vnp_ResponseCode)) {
-                    // Thanh toán thành công
-                    System.out.println("Payment success for booking: " + vnp_TxnRef);
+                    System.out.println("Payment success: " + vnp_TxnRef);
                     return new RedirectView("/carrental/payment-success.html?bookingId=" + vnp_TxnRef);
                 } else {
-                    // Thanh toán thất bại
-                    System.out.println("Payment failed for booking: " + vnp_TxnRef);
+                    System.out.println("Payment failed: " + vnp_TxnRef);
                     return new RedirectView("/carrental/payment-failed.html?code=" + vnp_ResponseCode);
                 }
             } else {
-                // Chữ ký không hợp lệ
                 System.out.println("Invalid signature");
                 return new RedirectView("/carrental/payment-failed.html?code=97");
             }
