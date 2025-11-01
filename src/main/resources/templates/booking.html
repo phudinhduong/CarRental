@@ -661,12 +661,14 @@
 
                 const params = new URLSearchParams({ bookingId, amount });
                 const res = await fetch(`/carrental/api/create?${params.toString()}`, { method: 'GET' });
-                const data = await res.json();
 
-                if (data.paymentUrl) {
-                    window.location.href = data.paymentUrl;
+                // Sửa dòng này:
+                const paymentUrl = await res.text(); // Thay vì res.json()
+
+                if (paymentUrl && paymentUrl.startsWith('http')) {
+                    window.location.href = paymentUrl;
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Payment Error', text: data.message || 'Cannot create payment URL' });
+                    Swal.fire({ icon: 'error', title: 'Payment Error', text: 'Cannot create payment URL' });
                 }
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'Payment Error', text: err.message });

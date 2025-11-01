@@ -19,9 +19,10 @@ spring:
         format_sql: true
 
 vnpay:
-  tmn-code: 2TON230F
-  secret-key: U37419UFII7AFQ6E05XAHK2XEDD8BT7W
+  tmn-code: K5V2184K
+  secret-key: RBKGWDEC24Z2BPJBLWXSYGCBDAAL8OO4
   pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   return-url: http://localhost:8080/carrental/api/payment/vnpay-return
   ipn-url: http://localhost:8080/carrental/api/payment/vnpay-ipn
   api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+

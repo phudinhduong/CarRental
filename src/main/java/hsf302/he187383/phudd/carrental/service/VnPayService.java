@@ -1,6 +1,8 @@
 package hsf302.he187383.phudd.carrental.service;
 
 import hsf302.he187383.phudd.carrental.config.VnPayConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -12,75 +14,74 @@ import java.util.*;
 @Service
 public class VnPayService {
 
-    private final VnPayConfig vnPayConfig;
+    @Autowired
+    private VnPayConfig vnPayConfig;
 
-    public VnPayService(VnPayConfig vnPayConfig) {
-        this.vnPayConfig = vnPayConfig;
-    }
+    public String createPaymentUrl(int bookingId, double amount, HttpServletRequest request) throws UnsupportedEncodingException {
+        String vnp_TxnRef = String.valueOf(bookingId);
+        String vnp_TmnCode = vnPayConfig.getVnpTmnCode();
+        String orderType = "other";
 
-    public String createPaymentUrl(String bookingId, long amount) throws Exception {
-        Map<String, String> vnp_Params = new TreeMap<>();
+        // VNPay yêu cầu amount phải nhân 100
+        long amountVND = (long) (amount * 100);
 
-        vnp_Params.put("vnp_Version", "2.1.0");
-        vnp_Params.put("vnp_Command", "pay");
-        vnp_Params.put("vnp_TmnCode", vnPayConfig.getVnpTmnCode());
-        vnp_Params.put("vnp_Amount", String.valueOf(amount * 100));
-        vnp_Params.put("vnp_CurrCode", "VND");
-        vnp_Params.put("vnp_TxnRef", bookingId + "_" + System.currentTimeMillis());
-        vnp_Params.put("vnp_OrderInfo", "Thanhtoanbooking " + bookingId);
-        vnp_Params.put("vnp_OrderType", "other");
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", vnPayConfig.getVnpReturnUrl());
-        vnp_Params.put("vnp_IpAddr", "127.0.0.1");
+        String vnp_IpAddr = getIpAddress(request);
+        String vnp_CreateDate = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        Calendar calExpire = Calendar.getInstance();
+        calExpire.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = new SimpleDateFormat("yyyyMMddHHmmss").format(calExpire.getTime());
 
-        // Thời gian
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        vnp_Params.put("vnp_CreateDate", formatter.format(cld.getTime()));
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("vnp_Version", "2.1.0");
+        params.put("vnp_Command", "pay");
+        params.put("vnp_TmnCode", vnp_TmnCode);
+        params.put("vnp_Amount", String.valueOf(amountVND));
+        params.put("vnp_CurrCode", "VND");
+        params.put("vnp_TxnRef", vnp_TxnRef);
+        params.put("vnp_OrderInfo", "Thanh toan cho ma dat xe: " + vnp_TxnRef);
+        params.put("vnp_OrderType", orderType);
+        params.put("vnp_Locale", "vn");
+        params.put("vnp_ReturnUrl", vnPayConfig.getVnpReturnUrl());
+        params.put("vnp_IpAddr", vnp_IpAddr);
+        params.put("vnp_CreateDate", vnp_CreateDate);
+        params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-        cld.add(Calendar.MINUTE, 15);
-        vnp_Params.put("vnp_ExpireDate", formatter.format(cld.getTime()));
+        // ✅ Bắt buộc sắp xếp theo thứ tự ASCII trước khi ký
+        List<String> fieldNames = new ArrayList<>(params.keySet());
+        Collections.sort(fieldNames);
 
-        // Tạo hashData (không encode) và query string (có encode)
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
 
-        boolean first = true;
-        for (Map.Entry<String, String> entry : vnp_Params.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
+        for (Iterator<String> it = fieldNames.iterator(); it.hasNext();) {
+            String fieldName = it.next();
+            String fieldValue = params.get(fieldName);
+            if (fieldValue != null && !fieldValue.isEmpty()) {
+                // Encode từng phần tử để khớp với chuỗi gửi đi thật sự
+                String encodedName = URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString());
+                String encodedValue = URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString());
 
-            if (value != null && value.length() > 0) {
-                if (!first) {
+                hashData.append(encodedName).append('=').append(encodedValue);
+                query.append(encodedName).append('=').append(encodedValue);
+
+                if (it.hasNext()) {
                     hashData.append('&');
                     query.append('&');
-                } else {
-                    first = false;
                 }
-
-                // hashData: sử dụng giá trị GỐC (không encode)
-                hashData.append(key).append('=').append(value);
-
-                // query: URL encode cả key và value
-                query.append(URLEncoder.encode(key, StandardCharsets.UTF_8))
-                        .append('=')
-                        .append(URLEncoder.encode(value, StandardCharsets.UTF_8));
             }
         }
 
-        // Tính chữ ký từ hashData (giá trị gốc)
+        // ✅ Tạo secure hash
         String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.getSecretKey(), hashData.toString());
-
-        // Thêm chữ ký vào query string
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
 
-        System.out.println("=== VNPay Debug ===");
-        System.out.println("HashData: " + hashData);
-        System.out.println("SecureHash: " + vnp_SecureHash);
-        System.out.println("Query: " + query);
-        System.out.println("Full URL: " + vnPayConfig.getVnpPayUrl() + "?" + query);
-        System.out.println("==================");
+        return vnPayConfig.getVnpPayUrl() + "?" + query;
+    }
 
-        return vnPayConfig.getVnpPayUrl() + "?" + query.toString();
+    // Lấy địa chỉ IP của client
+    private String getIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty()) ip = request.getRemoteAddr();
+        return ip;
     }
 }
