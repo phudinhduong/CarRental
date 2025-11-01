@@ -1,0 +1,280 @@
+/* * * * * General CSS * * * * */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #333333;
+    background: #f0f4f8;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.clearfix::after {
+    content: '';
+    clear: both;
+    display: table;
+}
+
+.wrapper {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 2000px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    display: flex;
+    background: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+div.credit {
+    margin: 25px auto 0 auto;
+    width: 100%;
+    text-align: center;
+    color: #666666;
+    font-size: 14px;
+}
+
+/* * * * * Login 1 CSS * * * * */
+.login-1 .col-left,
+.login-1 .col-right {
+    padding: 40px;
+    display: flex;
+}
+
+.login-1 .col-left {
+    width: 60%;
+    background: linear-gradient(135deg, #44c7f5, #2ecc71);
+    color: #ffffff;
+    position: relative;
+    clip-path: none; /* Removed clip-path for better compatibility */
+}
+
+.login-1 .col-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://via.placeholder.com/400x500?text=Car+Image') no-repeat center/cover; /* Replace with actual car image URL */
+    opacity: 0.3;
+}
+
+.login-1 .col-right {
+    width: 40%;
+    background: #ffffff;
+}
+
+@media(max-width: 575.98px) {
+    .login-1 .container {
+        flex-direction: column;
+        border-radius: 10px;
+    }
+
+    .login-1 .col-left,
+    .login-1 .col-right {
+        width: 100%;
+        padding: 30px;
+    }
+
+    .login-1 .col-left::before {
+        height: 200px;
+    }
+}
+
+.login-1 .login-text {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+}
+
+.login-1 .login-text h2 {
+    margin: 0 0 20px 0;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.login-1 .login-text p {
+    margin: 0 0 25px 0;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.login-1 .login-text .btn {
+    display: inline-block;
+    padding: 10px 25px;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border-radius: 50px;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    transition: all 0.3s ease;
+}
+
+.login-1 .login-text .btn:hover {
+    background: #ffffff;
+    color: #44c7f5;
+}
+
+.login-1 .login-form {
+    width: 100%;
+}
+
+.login-1 .login-form h2 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.login-1 .login-form p {
+    margin: 0 0 15px 0;
+    font-size: 15px;
+}
+
+.login-1 .login-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333333;
+}
+
+.login-1 .login-form label span {
+    color: #ff574e;
+}
+
+.login-1 .input-group {
+    position: relative;
+}
+
+.login-1 .input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999999;
+}
+
+.login-1 .login-form input {
+    width: 100%;
+    height: 45px;
+    padding: 0 15px 0 40px;
+    border: none;
+    border-radius: 50px;
+    background: #f0f4f8;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.login-1 .login-form input:focus {
+    box-shadow: inset 0 2px 5px rgba(68, 199, 245, 0.3), 0 0 0 2px rgba(68, 199, 245, 0.2);
+}
+
+.login-1 .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999999;
+}
+
+.login-1 .remember-me {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.login-1 .remember-me input {
+    margin-right: 10px;
+}
+
+.login-1 .login-form input[type=submit] {
+    width: 100%;
+    height: 45px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #44c7f5, #2ecc71);
+    color: #ffffff;
+    font-size: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: none;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.login-1 .login-form input[type=submit]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(68, 199, 245, 0.3);
+}
+
+.login-1 .social-login {
+    text-align: center;
+    font-size: 14px;
+    color: #666666;
+}
+
+.login-1 .social-login a {
+    display: inline-block;
+    margin: 10px 5px 0;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.login-1 .social-login .google {
+    background: #db4437;
+    color: #ffffff;
+}
+
+.login-1 .social-login .facebook {
+    background: #3b5998;
+    color: #ffffff;
+}
+
+.login-1 .social-login a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-1 .social-login a i {
+    margin-right: 8px;
+}
+
+.login-1 .login-form p a {
+    color: #44c7f5;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.login-1 .login-form p a:hover {
+    text-decoration: underline;
+}

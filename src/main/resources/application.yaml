@@ -5,24 +5,29 @@ server:
 
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=CarRental;encrypt=true;trustServerCertificate=true;
+    url: jdbc:sqlserver://localhost:1433;databaseName=CarRental;encrypt=true;trustServerCertificate=true
     username: sa
     password: sa
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
+  thymeleaf:
+    cache: false   # dev: tắt cache để reload template ngay
+    encoding: UTF-8
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop   # dev thôi; prod nên dùng 'validate' hoặc bỏ hẳn
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: true
+        jdbc.time_zone: UTC
+    database-platform: org.hibernate.dialect.SQLServerDialect
 
-vnpay:
-  tmn-code: K5V2184K
-  secret-key: RBKGWDEC24Z2BPJBLWXSYGCBDAAL8OO4
-  pay-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-  return-url: http://localhost:8080/carrental/api/payment/vnpay-return
-  ipn-url: http://localhost:8080/carrental/api/payment/vnpay-ipn
-  api-url: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
-
+#logging:
+#  level:
+#    org.thymeleaf: DEBUG
+#    org.hibernate.SQL: DEBUG            # in câu SQL
+#    org.hibernate.orm.jdbc.bind: TRACE  # in tham số bind của SQL
+#    org.springframework.web: INFO

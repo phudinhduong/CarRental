@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+    <meta charset="utf-8">
+    <title>ROYAL CARS - Car Rental HTML Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link rel="icon" th:href="@{/img/favicon.ico}">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css}">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- Import topbar -->
+<div th:replace="fragments/header :: topbar"></div>
+
+<!-- Import navbar (active = home) -->
+<div th:replace="fragments/header :: navbar('home')"></div>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Vehicle Management</h3>
+        <a class="btn btn-primary" th:href="@{/carowner/vehicles/new}">+ Add Vehicle</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="thead-dark">
+            <tr class="text-center">
+                <th>Title</th>
+                <th>Brand</th>
+                <th>Year</th>
+                <th>Color</th>
+                <th>Seats</th>
+                <th>Price/Day</th>
+                <th>Status</th>
+                <th>Active</th>
+                <th>Location</th>
+                <th style="width: 160px;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${vehicles}">
+                <td th:text="${v.title}">Title</td>
+                <td th:text="${v.brand}">Brand</td>
+                <td class="text-center" th:text="${v.year}">2020</td>
+                <td th:text="${v.color}">Silver</td>
+                <td class="text-center" th:text="${v.seats}">5</td>
+                <td class="text-right" th:text="${#numbers.formatDecimal(v.dailyPrice,0,'COMMA',0,'POINT')} + 'đ'">0đ</td>
+                <td th:text="${v.status}">AVAILABLE</td>
+                <td th:text="${v.isActive} ? 'Active' : 'Inactive'"></td>
+                <td th:text="${v.location != null ? v.location.city : ''}">City</td>
+                <td class="text-center">
+                    <a class="btn btn-sm btn-outline-primary"
+                       th:href="@{|/carowner/vehicles/${v.vehicleId}/edit|}">Sửa</a>
+                    <form th:action="@{|/carowner/vehicles/${v.vehicleId}/delete|}" method="post" style="display:inline"
+                          onsubmit="return confirm('Xóa xe này?');">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Xoá</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript Libraries -->
+<!-- jQuery & Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+<!-- Libraries -->
+<script th:src="@{/lib/easing/easing.min.js}"></script>
+<script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+<script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/moment.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/moment-timezone.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<!-- Template Javascript -->
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

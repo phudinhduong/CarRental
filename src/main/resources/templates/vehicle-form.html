@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8">
+    <title th:text="${vehicle.vehicleId} != null ? 'Sửa xe' : 'Thêm xe'">Xe</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link rel="icon" th:href="@{/img/favicon.ico}">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" th:href="@{/lib/owlcarousel/assets/owl.carousel.min.css}">
+    <link rel="stylesheet" th:href="@{/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css}">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+
+</head>
+<body>
+<!-- Import topbar -->
+<div th:replace="fragments/header :: topbar"></div>
+
+<!-- Import navbar (active = home) -->
+<div th:replace="fragments/header :: navbar('home')"></div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" th:text="${vehicle.vehicleId} != null ? 'Sửa xe' : 'Thêm xe'">Xe</h5>
+                    <a class="btn btn-light btn-sm" th:href="@{/carowner/manageCar}"><i class="fas fa-arrow-left mr-1"></i> Quay lại</a>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{${actionUrl}}" th:object="${vehicle}" method="post" class="needs-validation" novalidate>
+
+                        <h6 class="text-uppercase text-muted mb-3">Thông tin cơ bản</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-medium">Tiêu đề <span class="text-danger">*</span></label>
+                                <input class="form-control" th:field="*{title}" placeholder="Ví dụ: Toyota Vios 2020" required>
+                                <div class="invalid-feedback">Vui lòng nhập tiêu đề.</div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Hãng <span class="text-danger">*</span></label>
+                                <input class="form-control" th:field="*{brand}" placeholder="Ví dụ: Toyota" required>
+                                <div class="invalid-feedback">Vui lòng nhập hãng xe.</div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Model</label>
+                                <input class="form-control" th:field="*{model}" placeholder="Ví dụ: Vios E">
+                            </div>
+                        </div>
+
+                        <h6 class="text-uppercase text-muted mt-4 mb-3">Thông số</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-2">
+                                <label class="font-weight-medium">Loại</label>
+                                <input class="form-control" th:field="*{type}" placeholder="car / motorbike / truck">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Biển số <span class="text-danger">*</span></label>
+                                <input class="form-control" th:field="*{licensePlate}" placeholder="Ví dụ: 30A-123.45" required>
+                                <div class="invalid-feedback">Vui lòng nhập biển số.</div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label class="font-weight-medium">Năm</label>
+                                <input type="number" class="form-control" th:field="*{year}" min="1980" max="2100" placeholder="VD: 2020">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label class="font-weight-medium">Màu</label>
+                                <input class="form-control" th:field="*{color}" placeholder="Ví dụ: Đen">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="font-weight-medium">Số ghế</label>
+                                <input type="number" class="form-control" th:field="*{seats}" min="1" max="60" placeholder="VD: 5">
+                            </div>
+                        </div>
+
+                        <h6 class="text-uppercase text-muted mt-4 mb-3">Giá & Trạng thái</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-medium">Giá/ngày</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" th:field="*{dailyPrice}" min="0" step="1000" placeholder="VD: 800000">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">đ/ngày</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-medium">Đặt cọc</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" th:field="*{depositAmount}" min="0" step="1000" placeholder="VD: 2000000">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="font-weight-medium">Trạng thái</label>
+                                <select class="form-control" th:field="*{status}">
+                                    <option th:each="s : ${T(hsf302.he187383.phudd.carrental.model.enums.VehicleStatus).values()}" th:value="${s}" th:text="${s}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h6 class="text-uppercase text-muted mt-4 mb-3">Khác</h6>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="font-weight-medium">Địa điểm</label>
+                                <select class="form-control" name="locationId">
+                                    <option value="" disabled th:if="${vehicle.location == null}" selected>Chọn địa điểm</option>
+                                    <option th:each="loc : ${locations}"
+                                            th:value="${loc.locationId}"
+                                            th:selected="${vehicle.location != null and loc.locationId == vehicle.location.locationId}"
+                                            th:text="${loc.city + ' - ' + loc.addressLine}">
+                                    </option>
+                                </select>
+                                <small class="form-text text-muted">Chọn nơi để nhận/trả xe.</small>
+                            </div>
+                            <div class="form-group col-md-3 d-flex align-items-center">
+                                <div class="custom-control custom-switch mt-3 mt-md-4">
+                                    <input class="custom-control-input" type="checkbox" id="isActiveSwitch" th:field="*{isActive}">
+                                    <label class="custom-control-label" for="isActiveSwitch">Kích hoạt</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-end">
+                            <a class="btn btn-outline-secondary mr-2" th:href="@{/carowner/manageCar}"><i class="fas fa-times mr-1"></i> Huỷ</a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Lưu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Libraries -->
+<!-- jQuery & Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+<!-- Libraries -->
+<script th:src="@{/lib/easing/easing.min.js}"></script>
+<script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+<script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/moment.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/moment-timezone.min.js}"></script>
+<script th:src="@{/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js}"></script>
+
+<!-- Template Javascript -->
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

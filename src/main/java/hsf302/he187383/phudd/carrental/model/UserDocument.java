@@ -1,5 +1,8 @@
 package hsf302.he187383.phudd.carrental.model;
 
+
+import hsf302.he187383.phudd.carrental.model.enums.DocumentStatus;
+import hsf302.he187383.phudd.carrental.model.enums.DocumentType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,26 +11,29 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "user_documents",
+        uniqueConstraints = @UniqueConstraint(name = "uk_user_document_type", columnNames = {"user_id", "type"}))
+@Data @Builder @NoArgsConstructor @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDocument {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
+    @Column(name = "document_id")
     UUID documentId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne @JoinColumn(name = "user_id")
     User user;
 
-    String type; // ID_CARD, DRIVER_LICENSE, VEHICLE_REG
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    DocumentType type;
 
+    @Column(name = "file_url", length = 1024)
     String fileUrl;
 
-    String status; // pending, approved, rejected
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    DocumentStatus status;
 
+    @Column(name = "uploaded_at")
     LocalDateTime uploadedAt;
 }
