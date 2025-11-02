@@ -1,6 +1,8 @@
 package hsf302.he187383.phudd.carrental.controller;
 
+import hsf302.he187383.phudd.carrental.model.Location;
 import hsf302.he187383.phudd.carrental.model.Vehicle;
+import hsf302.he187383.phudd.carrental.service.LocationService;
 import hsf302.he187383.phudd.carrental.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,32 +18,18 @@ import java.util.UUID;
 public class BookingController {
 
     private final VehicleService vehicleService;
-
-//    @GetMapping("/booking")
-//    public String Default(Model model) {
-//        var vehicles = vehicleService.findAll();
-//        if (vehicles.isEmpty()) {
-//            model.addAttribute("errorMsg", "No vehicles available.");
-//            return "booking"; // or "error" page
-//        }
-//
-//        Vehicle vehicle = vehicles.get(0);
-//        model.addAttribute("vehicle", vehicle);
-//
-//        var images = vehicleService.findImagesOf(vehicle.getVehicleId());
-//        model.addAttribute("images", images); // <-- use "images" to match the template
-//
-//        return "booking";
-//    }
+    private final LocationService locationService;
 
     @GetMapping("/booking/{id}")
     public String carDetail(@PathVariable("id") UUID vehicleId, Model model) {
         Vehicle vehicle = vehicleService.findById(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        var images = vehicleService.findImagesOf(vehicleId);
+        Location location = locationService.findById(vehicle.getLocation().getLocationId())
+                .orElseThrow(() -> new RuntimeException("Location not found"));
 
         model.addAttribute("vehicle", vehicle);
-
-        var images = vehicleService.findImagesOf(vehicleId);
+        model.addAttribute("location", location);
         model.addAttribute("images", images);
 
         return "booking";
