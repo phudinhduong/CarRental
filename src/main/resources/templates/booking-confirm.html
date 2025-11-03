@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="bg-light">
+<!-- Main container -->
+<div class="container py-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h2 class="mb-0 text-uppercase">Booking Confirmation</h2>
+        </div>
+
+        <div class="card-body p-5">
+            <div class="row">
+                <!-- Booking Details -->
+                <div class="col-md-7">
+                    <h4 class="mb-4 text-secondary">Booking Details</h4>
+
+                    <p><strong>Vehicle:</strong> <span th:text="${booking.vehicle.title}"></span></p>
+                    <p><strong>Owner:</strong>
+                        <span th:text="${booking.owner != null ? booking.owner.fullName : 'N/A'}"></span>
+                    </p>
+                    <p><strong>Pickup Location:</strong>
+                        <span th:text="${booking.pickupLocation.addressLine}"></span>
+                    </p>
+                    <p><strong>Dropoff Location:</strong>
+                        <span th:text="${booking.dropoffLocation.addressLine}"></span>
+                    </p>
+                    <p><strong>Start Date & Time:</strong>
+                        <span th:text="${#temporals.format(booking.startDatetime, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+                    <p><strong>End Date & Time:</strong>
+                        <span th:text="${#temporals.format(booking.endDatetime, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+                    <p><strong>Total Days:</strong>
+                        <span th:text="${booking.days}"></span> days
+                    </p>
+
+                    <hr>
+
+                    <h4 class="mt-4 text-secondary">Payment Summary</h4>
+                    <p><strong>Base Amount:</strong>
+                        <span th:text="${#numbers.formatDecimal(booking.baseAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                    </p>
+                    <p><strong>Tax Amount:</strong>
+                        <span th:text="${#numbers.formatDecimal(booking.taxAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                    </p>
+                    <p><strong>Deposit:</strong>
+                        <span th:text="${#numbers.formatDecimal(booking.depositAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                    </p>
+                    <p><strong>Discount:</strong>
+                        <span th:text="${#numbers.formatDecimal(booking.discountAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                    </p>
+                    <hr>
+                    <h3 class="text-primary">
+                        Total: <span th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+                    </h3>
+
+                    <div class="mt-4">
+                        <a th:href="@{/}" class="btn btn-outline-secondary me-2">Back to Home</a>
+                        <a th:href="@{/my-bookings}" class="btn btn-primary">Pay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer text-center text-muted">
+            <small>Thank you for choosing <strong>Royal Cars</strong>. We look forward to serving you!</small>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

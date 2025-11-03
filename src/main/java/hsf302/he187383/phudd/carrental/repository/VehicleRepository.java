@@ -16,6 +16,7 @@ public interface VehicleRepository extends JpaRepositoryImplementation<Vehicle, 
     // lấy xe theo id của xe + chủ xe
     Optional<Vehicle> findByVehicleIdAndOwner_UserId(UUID vehicleId, UUID ownerId);
 
+    Optional<Vehicle> findByVehicleId(UUID vehicleId);
     // lấy xe để xóa
     Optional<Vehicle> findByVehicleIdAndOwner_UserIdAndDeletedAtIsNull(UUID vehicleId, UUID ownerId);
 
