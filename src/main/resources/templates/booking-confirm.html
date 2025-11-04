@@ -62,7 +62,11 @@
 
                     <div class="mt-4">
                         <a th:href="@{/}" class="btn btn-outline-secondary me-2">Back to Home</a>
-                        <a th:href="@{/my-bookings}" class="btn btn-primary">Pay</a>
+                        <a th:href="@{'/api/payment/create-payment'(amount=${booking.totalAmount}, orderInfo='Thanh toán thuê xe ' + ${booking.vehicle.title})}"
+                           class="btn btn-primary">
+                            Pay
+                        </a>
+
                     </div>
                 </div>
             </div>
