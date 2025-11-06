@@ -30,7 +30,7 @@ public class BookingService {
         Vehicle vehicle = vehicleRepository.findByVehicleId(vehicleId)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        User renter = userRepository.findByEmail("customer@gmail.com")
+        User renter = userRepository.findByEmail("customer1@gmail.com")
                 .orElseThrow(() -> new RuntimeException("Renter not found"));
 
         Location pickup = locationRepository.findById(pickupLocationId)

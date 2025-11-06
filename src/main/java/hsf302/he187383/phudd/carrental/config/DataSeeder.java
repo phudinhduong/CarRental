@@ -62,9 +62,9 @@ public class DataSeeder implements CommandLineRunner {
                     .build());
 
             User owner1 = userRepo.save(User.builder()
-                    .email("owner1@gmail.com")
+                    .email("customer@gmail.com")
                     .passwordHash(encoder.encode("123456"))
-                    .fullName("Owner1 Demo")
+                    .fullName("Customer")
                     .phone("0900000011")
                     .role(ownerRole)
                     .status("active")
@@ -73,7 +73,7 @@ public class DataSeeder implements CommandLineRunner {
                     .build());
 
             User customer = userRepo.save(User.builder()
-                    .email("customer@gmail.com")
+                    .email("customer1@gmail.com")
                     .passwordHash(encoder.encode("123456"))
                     .fullName("Customer Demo")
                     .dob(LocalDate.of(2000, 5, 20))
